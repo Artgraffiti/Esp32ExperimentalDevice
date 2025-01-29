@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "driver/gpio.h"
 #include "esp_err.h"
 #include "esp_event.h"
 #include "esp_timer.h"
@@ -39,6 +40,7 @@ typedef struct {
 } button_t;
 
 esp_err_t button_init(button_t *btn, gpio_num_t pin, bool active_low);
+esp_err_t button_set_pullmode(button_t *btn, gpio_pull_mode_t pull);
 esp_err_t button_set_debounce_conf(button_t *btn, button_debounce_cfg cfg);
 esp_err_t button_set_event_handler(button_t *btn, esp_event_handler_t handler,
                                    void *event_handler_arg);

@@ -1,6 +1,7 @@
 #include "button.h"
 
-#include "driver/gpio.h"
+#include <stdbool.h>
+
 #include "esp_attr.h"
 #include "esp_err.h"
 #include "hal/gpio_types.h"
@@ -41,7 +42,7 @@ void _debounce_timer_callback(void *arg) {
   }
 }
 
-void IRAM_ATTR button_isr_handler(void *args) {
+void IRAM_ATTR _button_isr_handler(void *args) {
   button_t *btn = (button_t *)args;
 
   btn->_raw_state = gpio_get_level(btn->pin);
@@ -65,7 +66,7 @@ esp_err_t button_init(button_t *btn, gpio_num_t pin, bool active_low) {
 
   gpio_config_t io_conf = {.pin_bit_mask = (1ULL << pin),
                            .mode = GPIO_MODE_INPUT,
-                           .pull_up_en = GPIO_PULLUP_ENABLE,
+                           .pull_up_en = GPIO_PULLUP_DISABLE,
                            .pull_down_en = GPIO_PULLDOWN_DISABLE,
                            .intr_type = GPIO_INTR_ANYEDGE};
   ret = gpio_config(&io_conf);
@@ -90,8 +91,12 @@ esp_err_t button_init(button_t *btn, gpio_num_t pin, bool active_low) {
       isr_service_installed = true;
     }
   }
-  ESP_ERROR_CHECK(gpio_isr_handler_add(btn->pin, button_isr_handler, btn));
+  ESP_ERROR_CHECK(gpio_isr_handler_add(btn->pin, _button_isr_handler, btn));
   return ret;
+}
+
+esp_err_t button_set_pullmode(button_t *btn, gpio_pull_mode_t pull) {
+  return gpio_set_pull_mode(btn->pin, pull);
 }
 
 esp_err_t button_set_debounce_conf(button_t *btn, button_debounce_cfg cfg) {

@@ -1,12 +1,15 @@
+#include <stdbool.h>
 #include <stdint.h>
 
 #include "button.h"
+#include "driver/gpio.h"
 #include "esp_event.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
+#include "hal/gpio_types.h"
 #include "st7789.h"
 
 #define BUTTON_LEFT_GPIO 4
@@ -112,7 +115,7 @@ void btn_cancel_handler(void *handler_args, esp_event_base_t base, int32_t id,
 
 void ST7789(void *pvParameters) {
   // Change SPI Clock Frequency
-  spi_clock_speed(40000000); // 40MHz
+  spi_clock_speed(40000000);  // 40MHz
   // spi_clock_speed(60000000); // 60MHz
 
   spi_master_init(&dev, CONFIG_MOSI_GPIO, CONFIG_SCLK_GPIO, CONFIG_CS_GPIO,
@@ -178,6 +181,13 @@ void keyboard_task(void *pvParameters) {
   button_init(&btn_right, BUTTON_RIGHT_GPIO, true);
   button_init(&btn_confirm, BUTTON_CONFIRM_GPIO, true);
   button_init(&btn_cancel, BUTTON_CANCEL_GPIO, true);
+
+  button_set_pullmode(&btn_left, GPIO_PULLUP_ONLY);
+  button_set_pullmode(&btn_up, GPIO_PULLUP_ONLY);
+  button_set_pullmode(&btn_down, GPIO_PULLUP_ONLY);
+  button_set_pullmode(&btn_right, GPIO_PULLUP_ONLY);
+  button_set_pullmode(&btn_confirm, GPIO_PULLUP_ONLY);
+  button_set_pullmode(&btn_cancel, GPIO_PULLUP_ONLY);
 
   button_set_debounce_conf(&btn_left, debounce_cfg);
   button_set_debounce_conf(&btn_up, debounce_cfg);
