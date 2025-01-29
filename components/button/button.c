@@ -15,6 +15,17 @@ bool _button_get_raw_state(button_t *btn) {
   return ret ^ btn->_active_low;
 }
 
+void _button_update_state(button_t *btn) {
+  if (btn->_state_info.state == btn->_raw_state)
+    return;
+  
+  btn->_state_info.state = btn->_raw_state ? BUTTON_PRESSED : BUTTON_RELEASED;
+  btn->_state_info.timestamp = esp_timer_get_time();
+
+  esp_event_post(BUTTON_EVENTS, btn->pin, &(btn->_state_info),
+                sizeof(button_state_info_t), 0);
+}
+
 void _debounce_timer_callback(void *arg) {
   button_t *btn = (button_t *)arg;
 
@@ -25,15 +36,7 @@ void _debounce_timer_callback(void *arg) {
 
     // if stable state
     if (btn->_debounce_counter >= btn->debounce_cfg.debounce_checks) {
-      // if state changed, update state
-      if (btn->_state_info.state != current_raw_state) {
-        btn->_state_info.state =
-            current_raw_state ? BUTTON_PRESSED : BUTTON_RELEASED;
-        btn->_state_info.timestamp = esp_timer_get_time();
-
-        esp_event_post(BUTTON_EVENTS, btn->pin, &(btn->_state_info),
-                       sizeof(button_state_info_t), 0);
-      }
+      _button_update_state(btn);
       esp_timer_stop(btn->_debounce_timer);
     }
   } else {
