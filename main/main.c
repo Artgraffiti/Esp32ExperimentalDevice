@@ -32,77 +32,77 @@ TFT_t dev;
 static uint16_t cursor_color = CURSOR_COLOR;
 static int16_t x_dir = 0;
 static int16_t y_dir = 0;
-static float x_spd = 4.2;
-static float y_spd = 4.2;
+static float x_spd = 8.5;
+static float y_spd = 8.5;
 
 void btn_left_handler(void *handler_args, esp_event_base_t base, int32_t id,
                       void *event_data) {
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
-  if (state_info->state == BUTTON_PRESSED) {
+  if (state_info->state) {
     x_dir -= 1;
-  } else if (state_info->state == BUTTON_RELEASED) {
+  } else {
     x_dir += 1;
   }
 
   ESP_LOGI("LEFT", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void btn_up_handler(void *handler_args, esp_event_base_t base, int32_t id,
                     void *event_data) {
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
-  if (state_info->state == BUTTON_PRESSED) {
+  if (state_info->state) {
     y_dir -= 1;
-  } else if (state_info->state == BUTTON_RELEASED) {
+  } else {
     y_dir += 1;
   }
 
   ESP_LOGI("UP", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void btn_down_handler(void *handler_args, esp_event_base_t base, int32_t id,
                       void *event_data) {
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
-  if (state_info->state == BUTTON_PRESSED) {
+  if (state_info->state) {
     y_dir += 1;
-  } else if (state_info->state == BUTTON_RELEASED) {
+  } else {
     y_dir -= 1;
   }
 
   ESP_LOGI("DOWN", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void btn_right_handler(void *handler_args, esp_event_base_t base, int32_t id,
                        void *event_data) {
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
-  if (state_info->state == BUTTON_PRESSED) {
+  if (state_info->state) {
     x_dir += 1;
-  } else if (state_info->state == BUTTON_RELEASED) {
+  } else {
     x_dir -= 1;
   }
 
   ESP_LOGI("RIGHT", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void btn_confirm_handler(void *handler_args, esp_event_base_t base, int32_t id,
                          void *event_data) {
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
-  if (state_info->state == BUTTON_PRESSED) {
+  if (state_info->state) {
     cursor_color = CURSOR_CLICK_COLOR;
-  } else if (state_info->state == BUTTON_RELEASED) {
+  } else {
     cursor_color = CURSOR_COLOR;
   }
 
   ESP_LOGI("CONFIRM", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void btn_cancel_handler(void *handler_args, esp_event_base_t base, int32_t id,
@@ -110,7 +110,7 @@ void btn_cancel_handler(void *handler_args, esp_event_base_t base, int32_t id,
   button_state_info_t *state_info = (button_state_info_t *)event_data;
 
   ESP_LOGI("CANCEL", "button %d: %s", (int)id,
-           state_info->state == BUTTON_PRESSED ? "PRESSED" : "RELEASED");
+           state_info->state ? "PRESSED" : "RELEASED");
 }
 
 void ST7789(void *pvParameters) {

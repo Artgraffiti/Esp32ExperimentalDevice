@@ -15,15 +15,14 @@ bool _button_get_raw_state(button_t *btn) {
   return ret ^ btn->_active_low;
 }
 
-void _button_update_state(button_t *btn) {
-  if (btn->_state_info.state == btn->_raw_state)
-    return;
-  
-  btn->_state_info.state = btn->_raw_state ? BUTTON_PRESSED : BUTTON_RELEASED;
+void _button_update_state(button_t *btn, bool state) {
+  if (btn->_state_info.state == state) return;
+
+  btn->_state_info.state = state;
   btn->_state_info.timestamp = esp_timer_get_time();
 
   esp_event_post(BUTTON_EVENTS, btn->pin, &(btn->_state_info),
-                sizeof(button_state_info_t), 0);
+                 sizeof(button_state_info_t), 0);
 }
 
 void _debounce_timer_callback(void *arg) {
@@ -36,7 +35,7 @@ void _debounce_timer_callback(void *arg) {
 
     // if stable state
     if (btn->_debounce_counter >= btn->debounce_cfg.debounce_checks) {
-      _button_update_state(btn);
+      _button_update_state(btn, btn->_raw_state);
       esp_timer_stop(btn->_debounce_timer);
     }
   } else {
@@ -80,7 +79,7 @@ esp_err_t button_init(button_t *btn, gpio_num_t pin, bool active_low) {
   btn->pin = pin;
   btn->_active_low = active_low;
   btn->_raw_state = false;
-  btn->_state_info.state = BUTTON_RELEASED;
+  btn->_state_info.state = false;
   btn->_state_info.timestamp = esp_timer_get_time();
   btn->_debounce_counter = 0;
   btn->debounce_cfg.debounce_checks = 5;

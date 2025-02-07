@@ -10,15 +10,8 @@
 #include "esp_timer.h"
 #include "soc/gpio_num.h"
 
-typedef enum {
-  BUTTON_RELEASED = 0,
-  BUTTON_PRESSED,
-  // BUTTON_DOUBLE_CLICKED,
-  // BUTTON_LONG_PRESSED,
-} button_state_t;
-
 typedef struct {
-  button_state_t state;
+  bool state;
   int64_t timestamp;
 } button_state_info_t;
 
