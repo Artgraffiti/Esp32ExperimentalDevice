@@ -32,7 +32,7 @@ menu "Application Configuration"
 			BUTTON GPIO number (IOxx).
 
 	config BUTTON_RIGHT_GPIO
-		int "BUTTON LEFT GPIO number"
+		int "BUTTON RIGHT GPIO number"
 		range 0 GPIO_RANGE_MAX
 		default 7 if IDF_TARGET_ESP32C3
 		help
